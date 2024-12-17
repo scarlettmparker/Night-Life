@@ -56,10 +56,6 @@ Bukkit.dispatchCommand(console, "execute in <dimension> run gamerule <rule> <val
 
 ---
 
-Here's the updated **README.md** with a **Configuration** section:
-
----
-
 ## Configuration
 
 The NightLife plugin includes configurable options to adjust the life system rules. These settings can be customized in the plugin's configuration file (`config.yml`).
