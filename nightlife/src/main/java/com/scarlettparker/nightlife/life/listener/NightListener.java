@@ -192,7 +192,8 @@ public class NightListener implements Listener {
         killer.sendTitle("§aYou have been cured!", "", 10, 70, 20);
       }
 
-      if (KILL_LIFE_INCREMENT) {
+      TPlayer tempVictim = new TPlayer(victim.getName());
+      if (KILL_LIFE_INCREMENT && tempVictim.getLives() >= KILL_LIFE_INCREMENT_THRESHOLD) {
         int lives = tempPlayer.getLives() + 1;
         if (lives > MAX_LIVES) {
           lives = MAX_LIVES;

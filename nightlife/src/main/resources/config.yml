@@ -1,3 +1,4 @@
 starting_lives: 6
 max_lives: 6
 kill_life_increment: true
+kill_life_increment_threshold: 4

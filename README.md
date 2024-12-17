@@ -1,6 +1,6 @@
 # NightLife Plugin
 
-- **Version**: `1.0.0`  
+- **Current Version**: `1.0.1`  
 - **API Version**: `1.15` (Compatible with 1.21.4)
 - **Main Class**: `com.scarlettparker.nightlife.Plugin`  
 - **Description**: Night Life plugin created for the **Video Games Society** Night Life Server.
@@ -20,7 +20,7 @@ The plugin enforces strict rules on enchantments:
   - If enchanted items are somehow obtained (e.g., through structures), holding or equipping them will still enforce the **Level 1 cap**.
 - **Bookcases**:
   - Adding bookcases will still show higher enchant levels and rarer enchants (e.g., **Silk Touch**).
-  - Bookcases allow for multiple enchantments to be applied to an item during a single enchant action, making them useful without breaking the enchant cap.
+  - Bookcases allow for multiple enchantments to be applied to an item during a single enchant action as usual, but only up to a maximum Level 1 enchantment.
 
 ---
 
@@ -70,15 +70,17 @@ The NightLife plugin includes configurable options to adjust the life system rul
 starting_lives: 6
 max_lives: 6
 kill_life_increment: true
+kill_life_increment_threshold: 4
 ```
 
 ### Configuration Options
 
-| Option               | Description                                                                 | Default Value |
-|-----------------------|---------------------------------------------------------------------------|---------------|
-| `starting_lives`      | The number of lives each player starts with when `/startlife` is executed. | `6`           |
-| `max_lives`           | The maximum number of lives a player can have.                           | `6`           |
-| `kill_life_increment` | Determines if players gain a life when killing another player.           | `true`        |
+| Option                          | Description                                                                 | Default Value |
+|---------------------------------|---------------------------------------------------------------------------|---------------|
+| `starting_lives`                | The number of lives each player starts with when `/startlife` is executed. | `6`           |
+| `max_lives`                     | The maximum number of lives a player can have.                           | `6`           |
+| `kill_life_increment`           | Determines if players gain a life when killing another player.           | `true`        |
+| `kill_life_increment_threshold` | Minimum lives a killed player needs for the killer to gain a life.       | `4`           |
 
 ---
 

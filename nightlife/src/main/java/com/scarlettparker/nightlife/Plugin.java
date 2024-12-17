@@ -31,6 +31,7 @@ public class Plugin extends JavaPlugin
   public static int STARTING_LIVES;
   public static int MAX_LIVES;
   public static boolean KILL_LIFE_INCREMENT;
+  public static int KILL_LIFE_INCREMENT_THRESHOLD;
 
   private NightListener nightListener;
 
@@ -44,8 +45,15 @@ public class Plugin extends JavaPlugin
       STARTING_LIVES = getConfig().getInt("starting_lives");
       MAX_LIVES = getConfig().getInt("max_lives");
       KILL_LIFE_INCREMENT = getConfig().getBoolean("kill_life_increment");
+      KILL_LIFE_INCREMENT_THRESHOLD = getConfig().getInt("kill_life_increment_threshold");
     } catch (Exception e) {
       LOGGER.severe("Error reading config file. Disabling plugin.");
+      getServer().getPluginManager().disablePlugin(this);
+      return;
+    }
+
+    if (STARTING_LIVES < 1 || MAX_LIVES < 1 || KILL_LIFE_INCREMENT_THRESHOLD < 0) {
+      LOGGER.severe("Invalid config values. Disabling plugin.");
       getServer().getPluginManager().disablePlugin(this);
       return;
     }
