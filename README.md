@@ -47,13 +47,13 @@ The plugin enforces strict rules on enchantments:
 
 ### Game Rules
 
-Specific game rules are applied to each dimension for balanced and challenging gameplay:
+Specific game rules are applied to each dimension upon the starting the life server:
 
-- logAdminCommands: **false** – Prevents logging of admin commands for cleaner logs.
+- logAdminCommands: **false** – Prevents logging of admin commands.
 - sendCommandFeedback: **false** – Prevents players from seeing command feedback.
 - keepInventory: **true** – Players do not lose their inventory upon death.
 - doInsomnia: **false** – Prevents **phantoms** from spawning.
-- difficulty: **hard** – Sets the game difficulty to **Hard** for a more challenging experience.
+- difficulty: **hard** – Sets the game difficulty to **Hard**.
 
 **Example Command Execution**:  
 ```java

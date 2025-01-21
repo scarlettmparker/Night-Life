@@ -6,7 +6,9 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
+
 import java.util.Objects;
+import java.util.UUID;
 
 import com.scarlettparker.nightlife.life.object.TPlayer;
 import static com.scarlettparker.nightlife.life.utils.ConfigUtils.*;
@@ -31,7 +33,9 @@ public class SetLife implements CommandExecutor {
       return true;
     }
 
-    if (!playerExists(args[0]) || player == null) {
+    UUID playerUUID = player.getUniqueId();
+
+    if (!playerExists(playerUUID) || player == null) {
       sender.sendMessage("§cPlayer not found.");
       return true;
     }
@@ -48,7 +52,7 @@ public class SetLife implements CommandExecutor {
       return true;
     }
 
-    TPlayer tempPlayer = new TPlayer(player.getName());
+    TPlayer tempPlayer = new TPlayer(playerUUID);
     if (tempPlayer.getLives() == lives) {
       sender.sendMessage("§cPlayer already has " + lives + " lives.");
       return true;

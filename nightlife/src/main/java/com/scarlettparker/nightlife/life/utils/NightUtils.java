@@ -4,6 +4,7 @@ import java.util.List;
 import org.bukkit.entity.Player;
 import com.scarlettparker.nightlife.life.object.TPlayer;
 import com.scarlettparker.nightlife.life.utils.WorldUtils;
+import java.util.UUID;
 
 public class NightUtils {
   private boolean isNightTime = false;
@@ -19,7 +20,8 @@ public class NightUtils {
   public void showPlayerLives() {
     List<Player> players = WorldUtils.getAllPlayers();
     for (Player p : players) {
-      TPlayer tempPlayer = new TPlayer(p.getName());
+      UUID playerUUID = p.getUniqueId();
+      TPlayer tempPlayer = new TPlayer(playerUUID);
       int lives = tempPlayer.getLives();
 
       if (lives > 0)

@@ -7,6 +7,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.Sound;
 import org.bukkit.Bukkit;
 
+import java.util.UUID;
+
 import com.scarlettparker.nightlife.life.object.TPlayer;
 
 public class Cure implements CommandExecutor {
@@ -25,7 +27,8 @@ public class Cure implements CommandExecutor {
     // cure all players
     if (args[0].equals("all")) {
       for (Player p : Bukkit.getOnlinePlayers()) {
-        TPlayer tempPlayer = new TPlayer(p.getName());
+        UUID playerUUID = p.getUniqueId();
+        TPlayer tempPlayer = new TPlayer(playerUUID);
         if (tempPlayer.getBoogeyMan()) {
           tempPlayer.setBoogeyMan(false);
           p.sendTitle("§aYou have been cured!", "", 10, 70, 20);
@@ -35,7 +38,8 @@ public class Cure implements CommandExecutor {
       return true;
     }
 
-    TPlayer tempPlayer = new TPlayer(args[0]);
+    UUID playerUUID = Bukkit.getPlayer(args[0]).getUniqueId();
+    TPlayer tempPlayer = new TPlayer(playerUUID);
     if (!tempPlayer.getBoogeyMan()) {
       sender.sendMessage("§c" + args[0] + " is not the Boogeyman.");
       return true;

@@ -10,6 +10,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.List;
+import java.util.UUID;
 
 import com.scarlettparker.nightlife.life.object.TPlayer;
 import static com.scarlettparker.nightlife.life.utils.WorldUtils.*;
@@ -39,7 +40,9 @@ public class Boogey implements CommandExecutor {
         sender.sendMessage("§cPlayer not found.");
         return true;
       }
-      TPlayer tempPlayer = new TPlayer(player.getName());
+
+      UUID playerUUID = player.getUniqueId();
+      TPlayer tempPlayer = new TPlayer(playerUUID);
 
       // Infect the player if possible
       if (tempPlayer.getBoogeyMan() || tempPlayer.getLives() <= 1) {
@@ -56,7 +59,8 @@ public class Boogey implements CommandExecutor {
     List<Player> players = getAllPlayers();
 
     for (Player p : players) {
-      TPlayer tempPlayer = new TPlayer(p.getName());
+      UUID playerUUID = p.getUniqueId();
+      TPlayer tempPlayer = new TPlayer(playerUUID);
       if (tempPlayer.getBoogeyMan() || tempPlayer.getLives() <= 1) {
         playerCountTemp--;
         players.remove(p);
@@ -93,7 +97,8 @@ public class Boogey implements CommandExecutor {
           Bukkit.getScheduler().runTaskLater(plugin, () -> {
             for (int i = 0; i < playerCount; i++) {
               Player p = players.get(i);
-              TPlayer tPlayer = new TPlayer(p.getName());
+              UUID playerUUID = p.getUniqueId();
+              TPlayer tPlayer = new TPlayer(playerUUID);
               tPlayer.setBoogeyMan(true);
               p.sendTitle("§cThe Boogeyman.", "", 20, 80, 10);
               p.playSound(p.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 1.0f, 1.0f);

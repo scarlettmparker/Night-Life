@@ -3,6 +3,7 @@ package com.scarlettparker.nightlife.life.object;
 import org.bukkit.Bukkit;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.UUID;
 import java.text.SimpleDateFormat;
 
 import com.google.gson.Gson;
@@ -12,22 +13,22 @@ import static com.scarlettparker.nightlife.life.utils.ConfigUtils.*;
 import static com.scarlettparker.nightlife.life.utils.WorldUtils.*;
 
 public class TPlayer {
-  private String name;
+  private UUID uuid;
 
-  public TPlayer(String name) {
-    this.name = name;
+  public TPlayer(UUID uuid) {
+    this.uuid = uuid;
   }
 
-  public String getName() {
-    return name;
+  public UUID getUuid() {
+    return uuid;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  public void setUuid(UUID uuid) {
+    this.uuid = uuid;
   }
 
   public int getLives() {
-    Object lives = getJSONObjectAttribute(playerFile, name, "lives");
+    Object lives = getJSONObjectAttribute(playerFile, uuid.toString(), "lives");
     if (lives instanceof Number) {
         return ((Number) lives).intValue();
     }
@@ -35,14 +36,14 @@ public class TPlayer {
   }
 
   public void setLives(int lives) {
-    setJSONObjectAttribute(playerFile, name, "lives", lives);
-    if (!Objects.equals(name, "CONSOLE")) {
-      setPlayerName(Bukkit.getPlayer(name), lives);
+    setJSONObjectAttribute(playerFile, uuid.toString(), "lives", lives);
+    if (!Objects.equals(uuid.toString(), "CONSOLE")) {
+      setPlayerName(Bukkit.getPlayer(uuid), lives);
     }
   }
 
   public Death[] getDeaths() {
-    Object deaths = getJSONObjectAttribute(playerFile, name, "deaths");
+    Object deaths = getJSONObjectAttribute(playerFile, uuid.toString(), "deaths");
     if (deaths instanceof String) {
       try {
         Gson gson = new GsonBuilder().create();
@@ -78,7 +79,7 @@ public class TPlayer {
         .setPrettyPrinting()
         .create();
       String deathsJson = gson.toJson(formattedDeaths);
-      setJSONObjectAttribute(playerFile, name, "deaths", deathsJson);
+      setJSONObjectAttribute(playerFile, uuid.toString(), "deaths", deathsJson);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -92,11 +93,11 @@ public class TPlayer {
   }
 
   public boolean getBoogeyMan() {
-    Object boogeyMan = getJSONObjectAttribute(playerFile, name, "boogeyman");
+    Object boogeyMan = getJSONObjectAttribute(playerFile, uuid.toString(), "boogeyman");
     return boogeyMan instanceof Boolean && (boolean) boogeyMan;
   }
 
   public void setBoogeyMan(boolean boogeyMan) {
-    setJSONObjectAttribute(playerFile, name, "boogeyman", boogeyMan);
+    setJSONObjectAttribute(playerFile, uuid.toString(), "boogeyman", boogeyMan);
   }
 }

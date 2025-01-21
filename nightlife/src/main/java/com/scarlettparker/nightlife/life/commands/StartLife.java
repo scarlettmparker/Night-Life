@@ -12,6 +12,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Objects;
+import java.util.UUID;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -61,10 +62,11 @@ public class StartLife implements CommandExecutor {
       playersObject = new JsonObject();
     }
 
-    TPlayer tempPlayer = new TPlayer(p.getName());
+    UUID playerUUID = p.getUniqueId();
+    TPlayer tempPlayer = new TPlayer(playerUUID);
     Gson gson = new Gson();
     JsonElement playerElement = gson.toJsonTree(tempPlayer);
-    playersObject.add(p.getName(), playerElement);
+    playersObject.add(playerUUID.toString(), playerElement);
     
     writeJSONToFile(playerFile, playersObject);
     tempPlayer.setLives(STARTING_LIVES);

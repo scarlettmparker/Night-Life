@@ -28,6 +28,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.Color;
 
 import java.util.Objects;
+import java.util.UUID;
 import java.time.Instant;
 
 import com.scarlettparker.nightlife.life.object.Death;
@@ -114,13 +115,15 @@ public class NightListener implements Listener {
    */
   @EventHandler
   public void playerJoinEvent(PlayerJoinEvent event) {
-    if (playerFile.exists() && !playerExists(event.getPlayer().getName())) {
+    UUID playerUUID = event.getPlayer().getUniqueId();
+
+    if (playerFile.exists() && !playerExists(playerUUID)) {
       createPlayer(event.getPlayer());
       if (nightUtils.getNightTime()) {
         hidePlayerLives(event.getPlayer());
       }
     } else {
-      TPlayer tempPlayer = new TPlayer(event.getPlayer().getName());
+      TPlayer tempPlayer = new TPlayer(playerUUID);
       int lives = tempPlayer.getLives();
 
       if (!nightUtils.getNightTime()) {
@@ -150,11 +153,13 @@ public class NightListener implements Listener {
   @EventHandler
   public void onPlayerDeath(PlayerDeathEvent event) {
     Player playerEntity = event.getEntity() instanceof Player ? (Player) event.getEntity() : null;
-    if (playerFile.exists() && playerExists(playerEntity.getName())) {
+    UUID playerUUID = playerEntity.getUniqueId();
+
+    if (playerFile.exists() && playerExists(playerUUID)) {
       long unixTime = Instant.now().getEpochSecond();
       Death death = new Death(unixTime, event.getDeathMessage());
 
-      TPlayer tempPlayer = new TPlayer(playerEntity.getName());
+      TPlayer tempPlayer = new TPlayer(playerUUID);
       Death[] deaths = tempPlayer.getDeaths();
       Death[] newDeaths = new Death[deaths.length + 1];
 
@@ -192,11 +197,14 @@ public class NightListener implements Listener {
 
     Player victim = (Player) event.getEntity();
     Player killer = victim.getKiller();
+
+    UUID victimUUID = victim.getUniqueId();
+    UUID killerUUID = killer != null ? killer.getUniqueId() : null;
         
     // Self kills are not counted
     if (killer != null && killer != victim) {
-      TPlayer tempPlayer = new TPlayer(killer.getName());
-      TPlayer tempVictim = new TPlayer(victim.getName());
+      TPlayer tempPlayer = new TPlayer(killerUUID);
+      TPlayer tempVictim = new TPlayer(victimUUID);
 
       if (tempPlayer.getBoogeyMan()) {
         tempPlayer.setBoogeyMan(false);

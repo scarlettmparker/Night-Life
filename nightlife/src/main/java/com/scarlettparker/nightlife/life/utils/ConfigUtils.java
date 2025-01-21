@@ -4,6 +4,7 @@ import com.google.gson.*;
 import org.bukkit.Bukkit;
 import java.io.*;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 public class ConfigUtils {
@@ -48,11 +49,11 @@ public class ConfigUtils {
     JsonObject existingJSONObject = new JsonObject();
 
     if (existingJSONObject != null) {
-      existingJSONObject.add(newJSONObject.get("name").getAsString(), newJSONObject);
+      existingJSONObject.add(newJSONObject.get("uuid").getAsString(), newJSONObject);
       writeJSONToFile(JSONFile, existingJSONObject);
     } else {
       JsonObject jsonObject = new JsonObject();
-      jsonObject.add(newJSONObject.get("name").getAsString(), newJSONObject);
+      jsonObject.add(newJSONObject.get("uuid").getAsString(), newJSONObject);
       writeJSONToFile(JSONFile, jsonObject);
     }
   }
@@ -182,7 +183,7 @@ public class ConfigUtils {
     return JSONFile.exists();
   }
 
-  public static boolean playerExists(String playerName) {
-    return getJSONObjectAttribute(playerFile, playerName, "name") != null;
+  public static boolean playerExists(UUID playerUUID) {
+    return getJSONObjectAttribute(playerFile, playerUUID.toString(), "uuid") != null;
   }
 }
