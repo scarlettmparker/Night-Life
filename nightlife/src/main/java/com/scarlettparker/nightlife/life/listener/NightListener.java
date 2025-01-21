@@ -2,6 +2,7 @@ package com.scarlettparker.nightlife.life.listener;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.Sound;
 import org.bukkit.World.Environment;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitTask;
@@ -81,6 +82,7 @@ public class NightListener implements Listener {
 
           nightUtils.setNightTime(true);
           nightUtils.setDayTime(false);
+          Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "gamerule announceAdvancements false");
         }
 
         // transition into day
@@ -90,6 +92,7 @@ public class NightListener implements Listener {
 
           nightUtils.setNightTime(false);
           nightUtils.setDayTime(true);
+          Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "gamerule announceAdvancements true");
         }
       }
     }, 0L, CHECK_FREQUENCY);
@@ -113,14 +116,19 @@ public class NightListener implements Listener {
   public void playerJoinEvent(PlayerJoinEvent event) {
     if (playerFile.exists() && !playerExists(event.getPlayer().getName())) {
       createPlayer(event.getPlayer());
+      if (nightUtils.getNightTime()) {
+        hidePlayerLives(event.getPlayer());
+      }
     } else {
       TPlayer tempPlayer = new TPlayer(event.getPlayer().getName());
       int lives = tempPlayer.getLives();
 
-      if (!nightUtils.getNightTime())
+      if (!nightUtils.getNightTime()) {
         setPlayerName(event.getPlayer(), lives);
-      else
+      }
+      else {
         hidePlayerLives(event.getPlayer());
+      }
     }
 
     if (nightUtils.getNightTime())
@@ -185,27 +193,44 @@ public class NightListener implements Listener {
     Player victim = (Player) event.getEntity();
     Player killer = victim.getKiller();
         
-    if (killer != null) {
+    // Self kills are not counted
+    if (killer != null && killer != victim) {
       TPlayer tempPlayer = new TPlayer(killer.getName());
+      TPlayer tempVictim = new TPlayer(victim.getName());
+
       if (tempPlayer.getBoogeyMan()) {
         tempPlayer.setBoogeyMan(false);
         killer.sendTitle("§aYou have been cured!", "", 10, 70, 20);
+        killer.playSound(killer.getLocation(), Sound.ENTITY_VILLAGER_YES, 1.0f, 1.0f);
+        if (nightUtils.getNightTime() && BOOGEY_TRANSFER_NIGHT) {
+          tempVictim.setBoogeyMan(true);
+          victim.sendTitle("§cYou are now the Boogeyman!", "", 10, 70, 20);
+          victim.playSound(victim.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 1.0f, 1.0f);
+        }
       }
 
-      TPlayer tempVictim = new TPlayer(victim.getName());
-      if (KILL_LIFE_INCREMENT && tempVictim.getLives() >= KILL_LIFE_INCREMENT_THRESHOLD) {
+      // Increment killer's lives if victim has more than 4 lives (Default)
+      // and killer has less or equal to 2 lives (Default).
+      // Boogey kills are not counted.
+      if (KILL_LIFE_INCREMENT && tempVictim.getLives() >= KILL_LIFE_UPPER_THRESHOLD &&
+          !tempPlayer.getBoogeyMan() && tempPlayer.getLives() <= KILL_LIFE_LOWER_THRESHOLD) {
         int lives = tempPlayer.getLives() + 1;
         if (lives > MAX_LIVES) {
           lives = MAX_LIVES;
         }
         tempPlayer.setLives(lives);
         Player player = Bukkit.getPlayer(killer.getName());
-        setPlayerName(player, lives);
+        if (!nightUtils.getNightTime()) {
+          setPlayerName(player, lives);
+        } else {
+          hidePlayerLives(playerEntity);
+        }
       }
     }
 
-    if (nightUtils.getNightTime())
+    if (nightUtils.getNightTime()) {
       event.setDeathMessage(null);
+    }
   }
 
   /**

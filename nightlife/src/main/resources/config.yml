@@ -1,4 +1,18 @@
-starting_lives: 6
-max_lives: 6
-kill_life_increment: true
-kill_life_increment_threshold: 4
+life:
+  starting_lives: 6
+  max_lives: 6
+  boogey_transfer_night: true
+  kill_life_increment: true
+  kill_life_upper_threshold: 4
+  kill_life_lower_threshold: 2
+
+explosion:
+  explosion_speed: 0.4
+  bed_explosion_radius: 5.0
+  bed_explosion_dampening: 2.0
+  anchor_explosion_radius: 3.0
+  anchor_explosion_dampening: 4.0
+
+egg:
+  mob_egg_chance: 1.0 # (as percentage)
+  spawner_drop_eggs: false

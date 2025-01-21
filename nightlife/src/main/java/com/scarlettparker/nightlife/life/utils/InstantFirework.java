@@ -18,7 +18,7 @@ public class InstantFirework {
     fm.addEffect(fe);
     f.setFireworkMeta(fm);
     // set specific nbt so players don't get damaged by firework
-    f.getPersistentDataContainer().set(new NamespacedKey("videogameslifeserver", "fireworkmeta"), PersistentDataType.STRING, metaData);
+    f.getPersistentDataContainer().set(new NamespacedKey("nightlife", "fireworkmeta"), PersistentDataType.STRING, metaData);
     try {
       Class<?> entityFireworkClass = getClass("net.minecraft.server.", "EntityFireworks");
       Class<?> craftFireworkClass = getClass("org.bukkit.craftbukkit.", "entity.CraftFirework");

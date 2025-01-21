@@ -17,7 +17,7 @@ commands:
     usage: "/<command> <player> <message>"
   boogey:
     description: "Set the boogeyman."
-    usage: "/<command> <players>"
+    usage: "/<command> <number|player>"
   cure:
     description: "Cure a player."
     usage: "/<command> <player>"

@@ -25,7 +25,7 @@ public class Boogey implements CommandExecutor {
     }
 
     if (args.length != 1) {
-      sender.sendMessage("§cUsage: /boogey <number>");
+      sender.sendMessage("§cUsage: /boogey <number|player>");
       return true;
     }
 
@@ -33,8 +33,24 @@ public class Boogey implements CommandExecutor {
     try {
       playerCountTemp = Integer.parseInt(args[0]);
     } catch (NumberFormatException e) {
-      sender.sendMessage("§cNumber of boogeymen must be an integer.");
-      return true;
+      // Check if you are trying to infect a player or number of players
+      Player player = Bukkit.getPlayer(args[0]);
+      if (player == null) {
+        sender.sendMessage("§cPlayer not found.");
+        return true;
+      }
+      TPlayer tempPlayer = new TPlayer(player.getName());
+
+      // Infect the player if possible
+      if (tempPlayer.getBoogeyMan() || tempPlayer.getLives() <= 1) {
+        sender.sendMessage("§cPlayer is already a boogeyman or is not a valid boogey candidate.");
+        return true;
+      } else {
+        tempPlayer.setBoogeyMan(true);
+        player.sendTitle("§cYou are now the Boogeyman!", "", 10, 70, 20);
+        player.playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 1.0f, 1.0f);
+        return true;
+      }
     }
 
     List<Player> players = getAllPlayers();
@@ -80,10 +96,12 @@ public class Boogey implements CommandExecutor {
               TPlayer tPlayer = new TPlayer(p.getName());
               tPlayer.setBoogeyMan(true);
               p.sendTitle("§cThe Boogeyman.", "", 20, 80, 10);
+              p.playSound(p.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 1.0f, 1.0f);
             }
     
             for (int i = playerCount; i < players.size(); i++) {
               players.get(i).sendTitle("§aNot The Boogeyman.", "", 20, 80, 10);
+              players.get(i).playSound(players.get(i).getLocation(), Sound.ENTITY_VILLAGER_YES, 1.0f, 1.0f);
             }
           }, 80L); // 4 seconds
         }

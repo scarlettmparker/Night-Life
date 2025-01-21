@@ -4,6 +4,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.Sound;
 import org.bukkit.Bukkit;
 
 import com.scarlettparker.nightlife.life.object.TPlayer;
@@ -28,6 +29,7 @@ public class Cure implements CommandExecutor {
         if (tempPlayer.getBoogeyMan()) {
           tempPlayer.setBoogeyMan(false);
           p.sendTitle("§aYou have been cured!", "", 10, 70, 20);
+          p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_YES, 1.0f, 1.0f);
         }
       }
       return true;
@@ -43,6 +45,7 @@ public class Cure implements CommandExecutor {
     Player player = Bukkit.getPlayer(args[0]);
     if (player != null) {
       player.sendTitle("§aYou have been cured!", "", 10, 70, 20);
+      player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_YES, 1.0f, 1.0f);
     }
     return true;
   }

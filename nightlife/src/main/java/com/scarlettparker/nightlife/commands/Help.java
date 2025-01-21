@@ -7,7 +7,7 @@ import org.bukkit.command.TabExecutor;
 
 public class Help implements CommandExecutor, TabExecutor {
   public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-    sender.sendMessage("Welcome to Night Life!");
+    sender.sendMessage("§cThis command is disabled.");
     return true;
   }
 
