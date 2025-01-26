@@ -7,17 +7,17 @@ import com.scarlettparker.nightlife.life.utils.WorldUtils;
 import java.util.UUID;
 
 public class NightUtils {
-  private boolean isNightTime = false;
-  private boolean isDayTime = false;
+  public static boolean isNightTime = false;
+  public static boolean isDayTime = false;
   
-  public void hidePlayerLives() {
+  public static void hidePlayerLives() {
     List<Player> players = WorldUtils.getAllPlayers();
     for (Player p : players) {
       WorldUtils.hidePlayerLives(p);
     }
   }
 
-  public void showPlayerLives() {
+  public static void showPlayerLives() {
     List<Player> players = WorldUtils.getAllPlayers();
     for (Player p : players) {
       UUID playerUUID = p.getUniqueId();
@@ -29,20 +29,19 @@ public class NightUtils {
     }
   }
 
-  public boolean getNightTime() {
+  public static boolean getNightTime() {
     return isNightTime;
   }
 
-  public boolean getDayTime() {
+  public static boolean getDayTime() {
     return isDayTime;
   }
 
-  public void setNightTime(boolean isNightTime) {
-    this.isNightTime = isNightTime;
+  public static void setNightTime(boolean nightTime) {
+    isNightTime = nightTime;
   }
 
-  public void setDayTime(boolean isDayTime) {
-    this.isDayTime = isDayTime;
+  public static void setDayTime(boolean dayTime) {
+    isDayTime = dayTime;
   }
-
 }

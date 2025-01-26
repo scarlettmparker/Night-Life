@@ -13,6 +13,7 @@ import org.bukkit.block.Bed;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.RespawnAnchor;
 import org.bukkit.block.BlockState;
+import org.bukkit.entity.LivingEntity;
 
 import static com.scarlettparker.nightlife.Plugin.*;
 
@@ -91,11 +92,15 @@ public class ExplosionListener implements Listener {
     block.getWorld().createExplosion(block.getLocation(), power, false, true, event.getPlayer());
 
     // Only affect players
-    if (event.getPlayer() instanceof Player) {
-      event.getPlayer().damage(event.getPlayer().getHealth() / multiplier);
-    } else {
-      event.getPlayer().damage(event.getPlayer().getHealth());
+    double radius = power * 2;
+    for (Entity entity : block.getWorld().getNearbyEntities(block.getLocation(), radius, radius, radius)) {
+      if (entity instanceof LivingEntity) {
+        LivingEntity livingEntity = (LivingEntity) entity;
+        double distance = livingEntity.getLocation().distance(block.getLocation());
+        double damage = (1 - (distance / radius)) * (livingEntity.getHealth() / multiplier);
+        livingEntity.damage(damage);
+        livingEntity.setVelocity(livingEntity.getLocation().getDirection().multiply(-EXPLOSION_SPEED).setY(1));
+      }
     }
-    event.getPlayer().setVelocity(event.getPlayer().getLocation().getDirection().multiply(-EXPLOSION_SPEED).setY(1));
   }
 }

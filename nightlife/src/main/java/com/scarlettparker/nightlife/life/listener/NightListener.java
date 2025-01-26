@@ -35,10 +35,10 @@ import com.scarlettparker.nightlife.life.object.Death;
 import com.scarlettparker.nightlife.life.object.TPlayer;
 import com.scarlettparker.nightlife.life.utils.InstantFirework;
 import com.scarlettparker.nightlife.life.utils.NightUtils;
+import com.scarlettparker.nightlife.life.utils.WorldUtils;
 
 import static com.scarlettparker.nightlife.life.commands.StartLife.*;
 import static com.scarlettparker.nightlife.life.utils.ConfigUtils.*;
-import static com.scarlettparker.nightlife.life.utils.WorldUtils.*;
 import static com.scarlettparker.nightlife.Plugin.*;
 
 public class NightListener implements Listener {
@@ -50,12 +50,10 @@ public class NightListener implements Listener {
   private static final long CHECK_FREQUENCY = 20L * 10;
   
   private final Plugin plugin;
-  private final NightUtils nightUtils;
   private BukkitTask timeCheckTask;
 
   public NightListener(Plugin plugin) {
     this.plugin = plugin;
-    this.nightUtils = new NightUtils();
     startTimeChecker();
   }
 
@@ -77,22 +75,24 @@ public class NightListener implements Listener {
         boolean isDayTime = time >= DAY_START && time <= DAY_END;
 
         // transition into night
-        if (isNightTime && !nightUtils.getNightTime()) {
+        if (isNightTime && !NightUtils.getNightTime()) {
           Bukkit.broadcastMessage("§9The sun is setting...");
-          nightUtils.hidePlayerLives();
 
-          nightUtils.setNightTime(true);
-          nightUtils.setDayTime(false);
+          NightUtils.hidePlayerLives();
+          NightUtils.setNightTime(true);
+          NightUtils.setDayTime(false);
+
           Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "gamerule announceAdvancements false");
         }
 
         // transition into day
-        if (isDayTime && !nightUtils.getDayTime()) {
+        if (isDayTime && !NightUtils.getDayTime()) {
           Bukkit.broadcastMessage("§eThe sun is rising...");
-          nightUtils.showPlayerLives();
 
-          nightUtils.setNightTime(false);
-          nightUtils.setDayTime(true);
+          NightUtils.showPlayerLives();
+          NightUtils.setNightTime(false);
+          NightUtils.setDayTime(true);
+          
           Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "gamerule announceAdvancements true");
         }
       }
@@ -119,22 +119,22 @@ public class NightListener implements Listener {
 
     if (playerFile.exists() && !playerExists(playerUUID)) {
       createPlayer(event.getPlayer());
-      if (nightUtils.getNightTime()) {
-        hidePlayerLives(event.getPlayer());
+      if (NightUtils.getNightTime()) {
+        WorldUtils.hidePlayerLives(event.getPlayer());
       }
     } else {
       TPlayer tempPlayer = new TPlayer(playerUUID);
       int lives = tempPlayer.getLives();
 
-      if (!nightUtils.getNightTime()) {
-        setPlayerName(event.getPlayer(), lives);
+      if (!NightUtils.getNightTime()) {
+        WorldUtils.setPlayerName(event.getPlayer(), lives);
       }
       else {
-        hidePlayerLives(event.getPlayer());
+        WorldUtils.hidePlayerLives(event.getPlayer());
       }
     }
 
-    if (nightUtils.getNightTime())
+    if (NightUtils.getNightTime())
       event.setJoinMessage(null);
   }
 
@@ -143,7 +143,7 @@ public class NightListener implements Listener {
    */
   @EventHandler
   public void playerQuitEvent(PlayerQuitEvent event) {
-    if (nightUtils.getNightTime())
+    if (NightUtils.getNightTime())
       event.setQuitMessage(null);
   }
 
@@ -172,18 +172,18 @@ public class NightListener implements Listener {
         lives--;
       } else {
         lives = 0;
-        handleFinalDeath(playerEntity.getName());
+        WorldUtils.handleFinalDeath(playerEntity.getName());
       }
 
       tempPlayer.setLives(lives);
-      if (!nightUtils.getNightTime()) {
-        setPlayerName(playerEntity, lives);
+      if (!NightUtils.getNightTime()) {
+        WorldUtils.setPlayerName(playerEntity, lives);
       } else {
-        hidePlayerLives(playerEntity);
+        WorldUtils.hidePlayerLives(playerEntity);
       }
     }
 
-    if (!nightUtils.getNightTime()) {
+    if (!NightUtils.getNightTime()) {
       Location pLoc = playerEntity.getLocation();
       FireworkEffect fireworkEffect = FireworkEffect.builder().flicker(false).trail(true)
         .with(FireworkEffect.Type.BALL).withColor(Color.WHITE).withFade(Color.GRAY).build();
@@ -210,7 +210,7 @@ public class NightListener implements Listener {
         tempPlayer.setBoogeyMan(false);
         killer.sendTitle("§aYou have been cured!", "", 10, 70, 20);
         killer.playSound(killer.getLocation(), Sound.ENTITY_VILLAGER_YES, 1.0f, 1.0f);
-        if (nightUtils.getNightTime() && BOOGEY_TRANSFER_NIGHT) {
+        if (NightUtils.getNightTime() && BOOGEY_TRANSFER_NIGHT) {
           tempVictim.setBoogeyMan(true);
           victim.sendTitle("§cYou are now the Boogeyman!", "", 10, 70, 20);
           victim.playSound(victim.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 1.0f, 1.0f);
@@ -228,15 +228,10 @@ public class NightListener implements Listener {
         }
         tempPlayer.setLives(lives);
         Player player = Bukkit.getPlayer(killer.getName());
-        if (!nightUtils.getNightTime()) {
-          setPlayerName(player, lives);
-        } else {
-          hidePlayerLives(playerEntity);
-        }
       }
     }
 
-    if (nightUtils.getNightTime()) {
+    if (NightUtils.getNightTime()) {
       event.setDeathMessage(null);
     }
   }
@@ -246,7 +241,7 @@ public class NightListener implements Listener {
    */
   @EventHandler
   public void onSleepEvent(PlayerBedEnterEvent event) {
-    if (nightUtils.getNightTime()) {
+    if (NightUtils.getNightTime()) {
       event.setCancelled(true);
       event.getPlayer().sendMessage("§cYou cannot sleep at night.");
     }
@@ -279,7 +274,7 @@ public class NightListener implements Listener {
    */
   @EventHandler
   public void onEntityDeath(EntityDeathEvent event) {
-    if (nightUtils.getNightTime() && event.getEntity() instanceof org.bukkit.entity.Player) {
+    if (NightUtils.getNightTime() && event.getEntity() instanceof org.bukkit.entity.Player) {
       ((PlayerDeathEvent) event).setDeathMessage(null);
     }
   }
@@ -289,7 +284,7 @@ public class NightListener implements Listener {
    */
   @EventHandler
   public void onPlayerChat(AsyncPlayerChatEvent event) {
-    if (nightUtils.getNightTime()) {
+    if (NightUtils.getNightTime()) {
       event.setCancelled(true);
       Player player = event.getPlayer();
       player.sendMessage("§cYou cannot talk at night.");

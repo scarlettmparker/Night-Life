@@ -1,6 +1,6 @@
 # NightLife Plugin
 
-- **Current Version**: 1.1.0  
+- **Current Version**: 1.1.2  
 - **API Version**: 1.16.5  
 - **Main Class**: com.scarlettparker.nightlife.Plugin  
 - **Description**: Night Life plugin created for the **Video Games Society** Night Life Server.

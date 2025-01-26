@@ -5,12 +5,14 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.UUID;
 import java.text.SimpleDateFormat;
+import org.bukkit.entity.Player;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import static com.scarlettparker.nightlife.life.utils.ConfigUtils.*;
-import static com.scarlettparker.nightlife.life.utils.WorldUtils.*;
+import com.scarlettparker.nightlife.life.utils.WorldUtils;
+import com.scarlettparker.nightlife.life.utils.NightUtils;
 
 public class TPlayer {
   private UUID uuid;
@@ -30,15 +32,20 @@ public class TPlayer {
   public int getLives() {
     Object lives = getJSONObjectAttribute(playerFile, uuid.toString(), "lives");
     if (lives instanceof Number) {
-        return ((Number) lives).intValue();
+      return ((Number) lives).intValue();
     }
     return 0;
   }
 
   public void setLives(int lives) {
     setJSONObjectAttribute(playerFile, uuid.toString(), "lives", lives);
+    Player player = Bukkit.getPlayer(uuid);
     if (!Objects.equals(uuid.toString(), "CONSOLE")) {
-      setPlayerName(Bukkit.getPlayer(uuid), lives);
+      if (NightUtils.getNightTime()) {
+        WorldUtils.hidePlayerLives(player);
+      } else {
+        WorldUtils.setPlayerName(player, lives);
+      }
     }
   }
 
