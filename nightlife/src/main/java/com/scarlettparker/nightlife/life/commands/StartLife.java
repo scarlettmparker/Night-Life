@@ -102,6 +102,7 @@ public class StartLife implements CommandExecutor {
     Bukkit.dispatchCommand(console, "execute in " + dimension + " run gamerule sendCommandFeedback false");
     Bukkit.dispatchCommand(console, "execute in " + dimension + " run gamerule keepInventory true");
     Bukkit.dispatchCommand(console, "execute in " + dimension + " run gamerule doInsomnia false");
+    Bukkit.dispatchCommand(console, "execute in " + dimension + " run gamerule minecartMaxSpeed 1000");
     Bukkit.dispatchCommand(console, "execute in " + dimension + " run difficulty hard");
   }
 }

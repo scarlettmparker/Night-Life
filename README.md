@@ -53,6 +53,7 @@ Specific game rules are applied to each dimension upon the starting the life ser
 - sendCommandFeedback: **false** – Prevents players from seeing command feedback.
 - keepInventory: **true** – Players do not lose their inventory upon death.
 - doInsomnia: **false** – Prevents **phantoms** from spawning.
+- maxMinecartSpeed: **1000** – Makes minecarts move super fast. Requires datapack minecart_improvements to work.
 - difficulty: **hard** – Sets the game difficulty to **Hard**.
 
 **Example Command Execution**:  
