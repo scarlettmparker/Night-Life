@@ -239,6 +239,20 @@ public class NightListener implements Listener {
           victim.playSound(victim.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 1.0f, 1.0f);
         }
       }
+        
+      // Check for illegal kill
+      if (!tempPlayer.getBoogeyMan() && 
+          !tempVictim.getBoogeyMan() &&
+          (tempPlayer.getLives() >= 3 || 
+          (tempPlayer.getLives() == 2 && tempVictim.getLives() <= 2))) {
+        String message = "§cAdmin Message: Illegal kill! " + killer.getName() +  " (" + tempPlayer.getLives() +
+        " lives) illegally killed " + victim + " (" + tempVictim.getLives() + " lives).";
+        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+          if (onlinePlayer.isOp()) {
+            onlinePlayer.sendMessage(message);
+          }
+        }
+      }
   
       // Increment killer's lives if victim has more than 4 lives (Default)
       // and killer has less or equal to 2 lives (Default).
@@ -253,18 +267,6 @@ public class NightListener implements Listener {
         Player player = Bukkit.getPlayer(killer.getName());
         if (player != null) {
           player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("You now have " + lives + " lives."));
-        }
-      }
-  
-      // Check for illegal kill
-      if (!tempPlayer.getBoogeyMan() && 
-          (tempPlayer.getLives() >= 3 || 
-          (tempPlayer.getLives() == 2 && tempVictim.getLives() <= 2))) {
-        String message = "§cAdmin Message: Illegal kill! " + killer.getName() + " illegally killed " + victim;
-        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-          if (onlinePlayer.isOp()) {
-            onlinePlayer.sendMessage(message);
-          }
         }
       }
     }
