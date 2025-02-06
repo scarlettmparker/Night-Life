@@ -228,18 +228,7 @@ public class NightListener implements Listener {
     if (killer != null && killer != victim) {
       TPlayer tempPlayer = new TPlayer(killerUUID);
       TPlayer tempVictim = new TPlayer(victimUUID);
-  
-      if (tempPlayer.getBoogeyMan()) {
-        tempPlayer.setBoogeyMan(false);
-        killer.sendTitle("§aYou have been cured!", "", 10, 70, 20);
-        killer.playSound(killer.getLocation(), Sound.ENTITY_VILLAGER_YES, 1.0f, 1.0f);
-        if (NightUtils.getNightTime() && BOOGEY_TRANSFER_NIGHT) {
-          tempVictim.setBoogeyMan(true);
-          victim.sendTitle("§cYou are now the Boogeyman!", "", 10, 70, 20);
-          victim.playSound(victim.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 1.0f, 1.0f);
-        }
-      }
-        
+
       // Check for illegal kill
       if (!tempPlayer.getBoogeyMan() && 
           !tempVictim.getBoogeyMan() &&
@@ -251,6 +240,17 @@ public class NightListener implements Listener {
           if (onlinePlayer.isOp()) {
             onlinePlayer.sendMessage(message);
           }
+        }
+      }
+  
+      if (tempPlayer.getBoogeyMan()) {
+        tempPlayer.setBoogeyMan(false);
+        killer.sendTitle("§aYou have been cured!", "", 10, 70, 20);
+        killer.playSound(killer.getLocation(), Sound.ENTITY_VILLAGER_YES, 1.0f, 1.0f);
+        if (NightUtils.getNightTime() && BOOGEY_TRANSFER_NIGHT) {
+          tempVictim.setBoogeyMan(true);
+          victim.sendTitle("§cYou are now the Boogeyman!", "", 10, 70, 20);
+          victim.playSound(victim.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 1.0f, 1.0f);
         }
       }
   
