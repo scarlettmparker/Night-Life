@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import com.scarlettparker.nightlife.life.utils.NightUtils;
 
 public class Tell implements CommandExecutor, TabExecutor {
   @Override
@@ -26,8 +27,12 @@ public class Tell implements CommandExecutor, TabExecutor {
     }
 
     // build message and send to server
-    String message = String.join(" ", java.util.Arrays.copyOfRange(args, 1, args.length));
-    Bukkit.broadcastMessage("§c" + sender.getName() + " tried to tell " + target.getName() + "§f: " + message);
+    if (!NightUtils.getNightTime()) {
+      String message = String.join(" ", java.util.Arrays.copyOfRange(args, 1, args.length));
+      Bukkit.broadcastMessage("§c" + sender.getName() + " tried to tell " + target.getName() + "§f: " + message);
+    } else {
+      sender.sendMessage("§cYou cannot talk at night.");
+    }
 
     return true;
   }
