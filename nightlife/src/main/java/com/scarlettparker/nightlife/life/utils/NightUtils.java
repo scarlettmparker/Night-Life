@@ -24,8 +24,9 @@ public class NightUtils {
       TPlayer tempPlayer = new TPlayer(playerUUID);
       int lives = tempPlayer.getLives();
 
-      if (lives > 0)
+      if (lives > 0) {
         WorldUtils.setPlayerName(p, lives);
+      }
     }
   }
 

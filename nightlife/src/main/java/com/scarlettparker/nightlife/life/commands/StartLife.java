@@ -64,6 +64,7 @@ public class StartLife implements CommandExecutor {
 
     UUID playerUUID = p.getUniqueId();
     TPlayer tempPlayer = new TPlayer(playerUUID);
+    tempPlayer.setUsername(p.getName());
     Gson gson = new Gson();
     JsonElement playerElement = gson.toJsonTree(tempPlayer);
     playersObject.add(playerUUID.toString(), playerElement);

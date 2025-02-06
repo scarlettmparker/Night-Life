@@ -1,6 +1,6 @@
 name: nightlife
 main: com.scarlettparker.nightlife.Plugin
-version: 0.0.1
+version: 1.1.3
 api-version: 1.15
 description: Night Life plugin for Video Games Society.
 commands:

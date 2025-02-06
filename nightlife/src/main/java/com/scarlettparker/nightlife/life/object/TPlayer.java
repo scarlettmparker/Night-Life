@@ -16,9 +16,11 @@ import com.scarlettparker.nightlife.life.utils.NightUtils;
 
 public class TPlayer {
   private UUID uuid;
+  private String username;
 
   public TPlayer(UUID uuid) {
     this.uuid = uuid;
+    this.username = getUsernameFromFile();
   }
 
   public UUID getUuid() {
@@ -27,6 +29,20 @@ public class TPlayer {
 
   public void setUuid(UUID uuid) {
     this.uuid = uuid;
+  }
+
+  public String getUsername() {
+    return username;
+  }
+
+  public void setUsername(String username) {
+    this.username = username;
+    setJSONObjectAttribute(playerFile, uuid.toString(), "username", username);
+  }
+
+  private String getUsernameFromFile() {
+    Object username = getJSONObjectAttribute(playerFile, uuid.toString(), "username");
+    return username instanceof String ? (String) username : null;
   }
 
   public int getLives() {

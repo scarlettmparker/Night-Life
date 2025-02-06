@@ -26,6 +26,7 @@ import org.bukkit.FireworkEffect;
 import org.bukkit.NamespacedKey;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.Color;
+import org.bukkit.command.ConsoleCommandSender;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -40,6 +41,8 @@ import com.scarlettparker.nightlife.life.utils.WorldUtils;
 import static com.scarlettparker.nightlife.life.commands.StartLife.*;
 import static com.scarlettparker.nightlife.life.utils.ConfigUtils.*;
 import static com.scarlettparker.nightlife.Plugin.*;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 
 public class NightListener implements Listener {
   private static final long NIGHT_START = 12800;
@@ -82,7 +85,7 @@ public class NightListener implements Listener {
           NightUtils.setNightTime(true);
           NightUtils.setDayTime(false);
 
-          Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "gamerule announceAdvancements false");
+          setGameRulesForAllDimensions(false);
         }
 
         // transition into day
@@ -93,10 +96,22 @@ public class NightListener implements Listener {
           NightUtils.setNightTime(false);
           NightUtils.setDayTime(true);
           
-          Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "gamerule announceAdvancements true");
+          setGameRulesForAllDimensions(true);
         }
       }
     }, 0L, CHECK_FREQUENCY);
+  }
+
+  private void setGameRulesForAllDimensions(boolean isDayTime) {
+    ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
+    setGameRulesForDimension(console, "minecraft:overworld", isDayTime);
+    setGameRulesForDimension(console, "minecraft:the_nether", isDayTime);
+    setGameRulesForDimension(console, "minecraft:the_end", isDayTime);
+  }
+
+  private void setGameRulesForDimension(ConsoleCommandSender console, String dimension, boolean isDayTime) {
+    Bukkit.dispatchCommand(console, "execute in " + dimension + " run gamerule announceAdvancements " + (isDayTime ? "true" : "false"));
+    Bukkit.dispatchCommand(console, "execute in " + dimension + " run gamerule showDeathMessages " + (isDayTime ? "true" : "false"));
   }
 
   /**
@@ -116,9 +131,12 @@ public class NightListener implements Listener {
   @EventHandler
   public void playerJoinEvent(PlayerJoinEvent event) {
     UUID playerUUID = event.getPlayer().getUniqueId();
+    String playerName = event.getPlayer().getName();
 
     if (playerFile.exists() && !playerExists(playerUUID)) {
       createPlayer(event.getPlayer());
+      TPlayer tempPlayer = new TPlayer(playerUUID);
+      tempPlayer.setUsername(playerName);
       if (NightUtils.getNightTime()) {
         WorldUtils.hidePlayerLives(event.getPlayer());
       }
@@ -128,14 +146,19 @@ public class NightListener implements Listener {
 
       if (!NightUtils.getNightTime()) {
         WorldUtils.setPlayerName(event.getPlayer(), lives);
-      }
-      else {
+      } else {
         WorldUtils.hidePlayerLives(event.getPlayer());
+      }
+
+      // update username if it has changed
+      if (!Objects.equals(tempPlayer.getUsername(), playerName)) {
+        tempPlayer.setUsername(playerName);
       }
     }
 
-    if (NightUtils.getNightTime())
+    if (NightUtils.getNightTime()) {
       event.setJoinMessage(null);
+    }
   }
 
   /**
@@ -154,19 +177,19 @@ public class NightListener implements Listener {
   public void onPlayerDeath(PlayerDeathEvent event) {
     Player playerEntity = event.getEntity() instanceof Player ? (Player) event.getEntity() : null;
     UUID playerUUID = playerEntity.getUniqueId();
-
+  
     if (playerFile.exists() && playerExists(playerUUID)) {
       long unixTime = Instant.now().getEpochSecond();
       Death death = new Death(unixTime, event.getDeathMessage());
-
+  
       TPlayer tempPlayer = new TPlayer(playerUUID);
       Death[] deaths = tempPlayer.getDeaths();
       Death[] newDeaths = new Death[deaths.length + 1];
-
+  
       System.arraycopy(deaths, 0, newDeaths, 0, deaths.length);
       newDeaths[deaths.length] = death;
       tempPlayer.setDeaths(newDeaths);
-
+  
       int lives = tempPlayer.getLives();
       if (lives > 1) {
         lives--;
@@ -174,7 +197,7 @@ public class NightListener implements Listener {
         lives = 0;
         WorldUtils.handleFinalDeath(playerEntity.getName());
       }
-
+  
       tempPlayer.setLives(lives);
       if (!NightUtils.getNightTime()) {
         WorldUtils.setPlayerName(playerEntity, lives);
@@ -182,30 +205,30 @@ public class NightListener implements Listener {
         WorldUtils.hidePlayerLives(playerEntity);
       }
     }
-
+  
     if (!NightUtils.getNightTime()) {
       Location pLoc = playerEntity.getLocation();
       FireworkEffect fireworkEffect = FireworkEffect.builder().flicker(false).trail(true)
-        .with(FireworkEffect.Type.BALL).withColor(Color.WHITE).withFade(Color.GRAY).build();
+          .with(FireworkEffect.Type.BALL).withColor(Color.WHITE).withFade(Color.GRAY).build();
       new InstantFirework(fireworkEffect, pLoc, "deathfirework");
     }
-
+  
     // boogey man checking
     if (!(event.getEntity() instanceof Player)) {
       return;
     }
-
+  
     Player victim = (Player) event.getEntity();
     Player killer = victim.getKiller();
-
+  
     UUID victimUUID = victim.getUniqueId();
     UUID killerUUID = killer != null ? killer.getUniqueId() : null;
-        
+  
     // Self kills are not counted
     if (killer != null && killer != victim) {
       TPlayer tempPlayer = new TPlayer(killerUUID);
       TPlayer tempVictim = new TPlayer(victimUUID);
-
+  
       if (tempPlayer.getBoogeyMan()) {
         tempPlayer.setBoogeyMan(false);
         killer.sendTitle("§aYou have been cured!", "", 10, 70, 20);
@@ -216,7 +239,7 @@ public class NightListener implements Listener {
           victim.playSound(victim.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 1.0f, 1.0f);
         }
       }
-
+  
       // Increment killer's lives if victim has more than 4 lives (Default)
       // and killer has less or equal to 2 lives (Default).
       // Boogey kills are not counted.
@@ -228,9 +251,24 @@ public class NightListener implements Listener {
         }
         tempPlayer.setLives(lives);
         Player player = Bukkit.getPlayer(killer.getName());
+        if (player != null) {
+          player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("You now have " + lives + " lives."));
+        }
+      }
+  
+      // Check for illegal kill
+      if (!tempPlayer.getBoogeyMan() && 
+          (tempPlayer.getLives() >= 3 || 
+          (tempPlayer.getLives() == 2 && tempVictim.getLives() <= 2))) {
+        String message = "§cAdmin Message: Illegal kill! " + killer.getName() + " illegally killed " + victim;
+        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+          if (onlinePlayer.isOp()) {
+            onlinePlayer.sendMessage(message);
+          }
+        }
       }
     }
-
+  
     if (NightUtils.getNightTime()) {
       event.setDeathMessage(null);
     }
@@ -266,16 +304,6 @@ public class NightListener implements Listener {
       String metaData = firework.getPersistentDataContainer().get(new NamespacedKey("nightlife", "fireworkmeta"), PersistentDataType.STRING);
       if (metaData != null && metaData.equals("deathfirework"))
         event.setCancelled(true);
-    }
-  }
-
-  /**
-   * Handle entity death event. This will prevent the death message from being displayed during night time.
-   */
-  @EventHandler
-  public void onEntityDeath(EntityDeathEvent event) {
-    if (NightUtils.getNightTime() && event.getEntity() instanceof org.bukkit.entity.Player) {
-      ((PlayerDeathEvent) event).setDeathMessage(null);
     }
   }
 
