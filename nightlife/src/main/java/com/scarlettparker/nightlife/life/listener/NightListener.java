@@ -177,50 +177,13 @@ public class NightListener implements Listener {
   public void onPlayerDeath(PlayerDeathEvent event) {
     Player playerEntity = event.getEntity() instanceof Player ? (Player) event.getEntity() : null;
     UUID playerUUID = playerEntity.getUniqueId();
-  
-    if (playerFile.exists() && playerExists(playerUUID)) {
-      long unixTime = Instant.now().getEpochSecond();
-      Death death = new Death(unixTime, event.getDeathMessage());
-  
-      TPlayer tempPlayer = new TPlayer(playerUUID);
-      Death[] deaths = tempPlayer.getDeaths();
-      Death[] newDeaths = new Death[deaths.length + 1];
-  
-      System.arraycopy(deaths, 0, newDeaths, 0, deaths.length);
-      newDeaths[deaths.length] = death;
-      tempPlayer.setDeaths(newDeaths);
-  
-      int lives = tempPlayer.getLives();
-      if (lives > 1) {
-        lives--;
-      } else {
-        lives = 0;
-        WorldUtils.handleFinalDeath(playerEntity.getName());
-      }
-  
-      tempPlayer.setLives(lives);
-      if (!NightUtils.getNightTime()) {
-        WorldUtils.setPlayerName(playerEntity, lives);
-      } else {
-        WorldUtils.hidePlayerLives(playerEntity);
-      }
-    }
-  
-    if (!NightUtils.getNightTime()) {
-      Location pLoc = playerEntity.getLocation();
-      FireworkEffect fireworkEffect = FireworkEffect.builder().flicker(false).trail(true)
-          .with(FireworkEffect.Type.BALL).withColor(Color.WHITE).withFade(Color.GRAY).build();
-      new InstantFirework(fireworkEffect, pLoc, "deathfirework");
-    }
-  
-    // boogey man checking
-    if (!(event.getEntity() instanceof Player)) {
+    
+    if (!playerFile.exists() || !playerExists(playerUUID)) {
       return;
     }
-  
+
     Player victim = (Player) event.getEntity();
     Player killer = victim.getKiller();
-  
     UUID victimUUID = victim.getUniqueId();
     UUID killerUUID = killer != null ? killer.getUniqueId() : null;
   
@@ -235,7 +198,7 @@ public class NightListener implements Listener {
           (tempPlayer.getLives() >= 3 || 
           (tempPlayer.getLives() == 2 && tempVictim.getLives() <= 2))) {
         String message = "§cAdmin Message: Illegal kill! " + killer.getName() +  " (" + tempPlayer.getLives() +
-        " lives) illegally killed " + victim + " (" + tempVictim.getLives() + " lives).";
+        " lives) illegally killed " + victim.getName() + " (" + tempVictim.getLives() + " lives).";
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
           if (onlinePlayer.isOp()) {
             onlinePlayer.sendMessage(message);
@@ -266,9 +229,47 @@ public class NightListener implements Listener {
         tempPlayer.setLives(lives);
         Player player = Bukkit.getPlayer(killer.getName());
         if (player != null) {
-          player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("You now have " + lives + " lives."));
+          player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§aYou now have " + lives + " lives"));
         }
       }
+    }
+
+    long unixTime = Instant.now().getEpochSecond();
+    Death death = new Death(unixTime, event.getDeathMessage());
+  
+    TPlayer tempPlayer = new TPlayer(playerUUID);
+    Death[] deaths = tempPlayer.getDeaths();
+    Death[] newDeaths = new Death[deaths.length + 1];
+  
+    System.arraycopy(deaths, 0, newDeaths, 0, deaths.length);
+    newDeaths[deaths.length] = death;
+    tempPlayer.setDeaths(newDeaths);
+
+    int lives = tempPlayer.getLives();
+    if (lives > 1) {
+      lives--;
+    } else {
+      lives = 0;
+      WorldUtils.handleFinalDeath(playerEntity.getName());
+    }
+
+    tempPlayer.setLives(lives);
+    if (!NightUtils.getNightTime()) {
+      WorldUtils.setPlayerName(playerEntity, lives);
+    } else {
+      WorldUtils.hidePlayerLives(playerEntity);
+    }
+  
+    if (!NightUtils.getNightTime()) {
+      Location pLoc = playerEntity.getLocation();
+      FireworkEffect fireworkEffect = FireworkEffect.builder().flicker(false).trail(true)
+          .with(FireworkEffect.Type.BALL).withColor(Color.WHITE).withFade(Color.GRAY).build();
+      new InstantFirework(fireworkEffect, pLoc, "deathfirework");
+    }
+  
+    // boogey man checking
+    if (!(event.getEntity() instanceof Player)) {
+      return;
     }
   
     if (NightUtils.getNightTime()) {

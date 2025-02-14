@@ -12,6 +12,7 @@ import com.scarlettparker.nightlife.commands.Tell;
 import com.scarlettparker.nightlife.life.commands.Boogey;
 import com.scarlettparker.nightlife.life.commands.Cure;
 import com.scarlettparker.nightlife.life.commands.Punish;
+import com.scarlettparker.nightlife.life.commands.Lives;
 import com.scarlettparker.nightlife.life.commands.SetLife;
 import com.scarlettparker.nightlife.life.commands.StartLife;
 
@@ -125,6 +126,7 @@ public class Plugin extends JavaPlugin
     getCommand("boogey").setExecutor(new Boogey());
     getCommand("cure").setExecutor(new Cure());
     getCommand("punish").setExecutor(new Punish());
+    getCommand("lives").setExecutor(new Lives());
     getCommand("startlife").setExecutor(new StartLife());
     getCommand("setlife").setExecutor(new SetLife());
 
